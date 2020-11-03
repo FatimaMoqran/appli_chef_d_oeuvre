@@ -24,3 +24,10 @@ class Email(db.Model):
      #comment l'objet sera printé 
     def __repr__(self):
         return f"Email('{self.categorie_model}','{self.categorie_choisie}')"#on ne montre pas le texte car ça peut être trs long
+
+class Categorie(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    label = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f"Categorie('{self.id}',{self.label}')" #afficher les categories et leur libelle 
