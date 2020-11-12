@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="/enregistrer_email" method="post">
+    <div class ="container">
+        <p>La prédiction est : {{response['prediction']}}.</p>
+        <p>si vous n'êtes pas d'accord, vous pouvez la modifier dans la liste ci dessous :</p>
+        <input type="hidden" name="prediction" value= "{{response['prediction']}}">
+        <select name = "select_categorie">
+            <option {% if response['prediction'] == "emea" %} selected="selected" {% endif %}>emea</option>
+            <option {% if response['prediction']== "communication" %} selected ="selected" {% endif %}>communication</option>
+            <option {% if response['prediction'] =="online" %} selected = "selected" {% endif %}>online</option>
+            <option {% if response['prediction'] =="expertsystem/fournisseurs" %} selected = "selected" {% endif %}>expert system/fournisseur</option>
+            <option {% if response['prediction'] == "businessinfra" %} selected = "selected" {% endif %}>businessinfra</option>
+        </select>
+        <button type = "submit" class="btn btn-primary">Classer</button>
+    </div>
+</form>
+{% endblock %}

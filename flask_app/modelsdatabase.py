@@ -1,17 +1,23 @@
-from flask_app import db
+from flask_app import db, login_manager
+from flask_login import UserMixin
 
-class User(db.Model):
+#permet de logger les differents user 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String, nullable=False)
-    prenom = db.Column(db.String, nullable=False)
-    login = db.Column(db.String(20), unique= True, nullable= False)
+    pseudo = db.Column(db.String, nullable=False)
+    login_email = db.Column(db.String(20), unique= True, nullable= False)
     mot_de_passe = db.Column(db.String(60), nullable = False)
     #spécifier la relation entre les deux classes
-    email= db.relationship('Email', backref='sender', lazy=True)
+    email_text = db.relationship('Email', backref='sender', lazy=True)
 
     #comment l'objet sera printé 
     def __repr__(self):
-        return f"User('{self.nom}','{self.prenom}','{self.login}')"#on ne montre pas le mot de passe quand on voudra le représenter
+        return f"User('{self.pseudo}','{self.login_email}')"#on ne montre pas le mot de passe quand on voudra le représenter
 
 class Email(db.Model):
     id = db.Column(db.Integer,primary_key=True)
