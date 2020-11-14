@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     login_email = db.Column(db.String(20), unique= True, nullable= False)
     mot_de_passe = db.Column(db.String(60), nullable = False)
     #spécifier la relation entre les deux classes
-    email_text = db.relationship('Email', backref='sender', lazy=True)
+    email = db.relationship('Email', backref='sender', lazy=True)
 
     #comment l'objet sera printé 
     def __repr__(self):
@@ -21,19 +21,51 @@ class User(db.Model, UserMixin):
 
 class Email(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    texte = db.Column(db.Text, nullable=False) 
-    categorie_model = db.Column(db.String(100), nullable=False)
-    categorie_choisie= db.Column(db.String(100), nullable=False)
-    #Foreign key 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
+    texte = db.Column(db.Text, nullable=False)
 
+    #foreign key
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=False)
+    prediction_id= db.Column(db.Integer, db.ForeignKey('prediction.id'))
+    choix_utilisateur_id = db.Column(db.Integer, db.ForeignKey('choix_utilisateur.id'))
+
+    #spécifier la relation entre les deux classes
+    prediction = db.relationship("Prediction", back_populates="email")
+    choix_utilisateur = db.relationship("ChoixUtilisateur",back_populates="email")
      #comment l'objet sera printé 
     def __repr__(self):
-        return f"Email('{self.categorie_model}','{self.categorie_choisie}')"#on ne montre pas le texte car ça peut être trs long
+        return f"Email('{self.texte}','{self.prediction_id}','{self.choix_utilisateur_id}')"#on ne montre pas le texte car ça peut être trs long
+   
 
 class Categorie(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     label = db.Column(db.String(50), nullable=False)
 
+    #spécifier la relation entre les deux classes
+    prediction = db.relationship('Prediction')
+    choix_utilisateur = db.relationship('ChoixUtilisateur')
+
     def __repr__(self):
-        return f"Categorie('{self.id}',{self.label}')" #afficher les categories et leur libelle 
+        return f"Categorie('{self.id}','{self.label}')" #afficher les categories et leur libelle
+   
+class Prediction(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    #foreign key
+    categorie_id = db.Column(db.Integer, db.ForeignKey('categorie.id'))
+
+    #spécifier la relation entre les deux classes
+    email = db.relationship("Email",back_populates="prediction",uselist=False)
+
+    def __repr__(self):
+        return f"Prediction('{self.id}','{self.categorie_id}')" #afficher les categories et leur libelle
+
+class ChoixUtilisateur(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    #foreign key
+    categorie_id = db.Column(db.Integer, db.ForeignKey('categorie.id'))
+    #spécifier la relation entre les deux classes
+    email = db.relationship("Email",back_populates="choix_utilisateur",uselist = False)
+
+    def __repr__(self):
+        return f"Choix Utilisateur('{self.id}','{self.categorie_id}')" #afficher les categories et leur libelle
+
+     

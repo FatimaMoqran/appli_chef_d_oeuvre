@@ -2,7 +2,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_app import app, db , bcrypt
 from flask_app.forms import RegistrationForm, LoginForm, PostForm
-from flask_app.modelsdatabase import User, Email
+from flask_app.modelsdatabase import User, Email, Prediction, ChoixUtilisateur
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_app.classify import classify
 
@@ -75,6 +75,14 @@ def classer_email():
             response = classify(texte)
             if response["status"] == "prediction_done": 
                 print('je vais dans le prédiction')
+                #enregistrer la prediction et le texte 
+                
+                prediction = Prediction(categorie_id = response['prediction'])
+                db.session.add(prediction)
+                db.session.commit()
+                email = Email(texte =texte,prediction_id= prediction.id, sender = current_user )
+                db.session.add(email)
+                db.session.commit()
                 return render_template('prediction.html',title= 'prediction', response=response, form='form')
     return render_template('classer_email.html', title='Classer votre email', form=form)
 
@@ -82,8 +90,12 @@ def classer_email():
 def enregistrer_email():
     form = PostForm()
     if request.method == "POST":
-        email = Email(texte = form.texte.data,categorie_model= request.form['prediction'],categorie_choisie= request.form['select_categorie'], sender = current_user )
-        db.session.add(email)
+        #enregistrer le choix
+        choix_utilisateur = ChoixUtilisateur(categorie_id=request.form['select_categorie'])
+        db.session.add(choix_utilisateur)
+        db.session.commit()
+        email= db.session.query(Email).order_by(Email.id.desc()).first()
+        email.choix_utilisateur= choix_utilisateur 
         db.session.commit()
         flash('votre email a été classé','succes')
     return render_template('classer_email.html', title='Classer votre email', form=form)
