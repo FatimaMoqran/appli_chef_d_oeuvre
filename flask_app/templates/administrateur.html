@@ -2,6 +2,30 @@
 {% block content %}
     <h1>Voici les statistiques du modèle</h1>
     <div class="media-body">
-      <p class="article-content">{{ email.texte }}</p>
+
+      <p class="article-content">{{ taux ~ "%"}}</p>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Email</th>
+            <th scope="col">Prediction Model</th>
+            <th scope="col">Choix Utilisateur</th>
+          </tr>
+        </thead>
+        <!-- zip(categories, emails, choix_utilisateur,predictions) -->
+         
+        <tbody>
+          {% for row in data %}
+         
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td> {{ row[1] }}</td>
+            <td> {{ row[2] }}</td>
+          </tr>
+
+          {% endfor %}
+        </tbody>
+          
+      </table>
     </div>
 {% endblock content %}

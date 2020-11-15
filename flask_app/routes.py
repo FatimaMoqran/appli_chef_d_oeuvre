@@ -2,7 +2,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_app import app, db , bcrypt
 from flask_app.forms import RegistrationForm, LoginForm, PostForm
-from flask_app.modelsdatabase import User, Email, Prediction, ChoixUtilisateur
+from flask_app.modelsdatabase import User, Email, Prediction, ChoixUtilisateur, Categorie
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_app.classify import classify
 
@@ -14,7 +14,27 @@ def home():
 @app.route('/administrateur')
 def admin():
     emails = Email.query.all()
-    return render_template('administrateur.html', title= 'Page Administrateur', emails = emails)
+    predictions = Prediction.query.all()
+    choix_utilisateur = ChoixUtilisateur.query.all()
+    categories = Categorie.query.all()
+    prediction_ok = 0
+    data = []
+    for email, prediction, choix_utilisateur in zip(emails, predictions,choix_utilisateur):
+        if prediction.id == choix_utilisateur.id and prediction.categorie_id == choix_utilisateur.categorie_id:
+            prediction_ok +=1 
+        else:
+            tmp= []
+            tmp.append(email.texte)
+            tmp.append(prediction.categorie_id)
+            tmp.append(choix_utilisateur.categorie_id)
+            data.append(tmp)
+
+    taux = (prediction_ok/ db.session.query(Email.texte).count())*100
+    nb_elements = db.session.query(Email.texte).count()
+    print("taux de prediction correctes %s"%(taux))
+    
+       
+    return render_template('administrateur.html', title= 'Page Administrateur', data = data, taux = taux, nb_elements = nb_elements )
  
 @app.route("/register", methods=['GET', 'POST'])
 def register():
