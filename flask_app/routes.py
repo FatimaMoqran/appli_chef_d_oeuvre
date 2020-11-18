@@ -11,31 +11,37 @@ from flask_app.classify import classify
 def home():
     return render_template('home.html')
 
-@app.route('/administrateur')
+@app.route('/administrateur',methods=['POST', 'GET'])
 def admin():
-    emails = Email.query.all()
-    predictions = Prediction.query.all()
-    choix_utilisateur = ChoixUtilisateur.query.all()
-    categories = Categorie.query.all()
-    prediction_ok = 0
-    data = []
-    for email, prediction, choix_utilisateur in zip(emails, predictions,choix_utilisateur):
-        if prediction.id == choix_utilisateur.id and prediction.categorie_id == choix_utilisateur.categorie_id:
-            prediction_ok +=1 
-        else:
-            tmp= []
-            tmp.append(email.texte)
-            tmp.append(prediction.categorie_id)
-            tmp.append(choix_utilisateur.categorie_id)
-            data.append(tmp)
+    if request.method == 'POST':
 
-    taux = (prediction_ok/ db.session.query(Email.texte).count())*100
-    nb_elements = db.session.query(Email.texte).count()
-    print("taux de prediction correctes %s"%(taux))
-    
-       
-    return render_template('administrateur.html', title= 'Page Administrateur', data = data, taux = taux, nb_elements = nb_elements )
- 
+        emails = Email.query.all()
+        predictions = Prediction.query.all()
+        choix_utilisateur = ChoixUtilisateur.query.all()
+        categories = Categorie.query.all()
+        prediction_ok = 0
+        data = []
+        #recupère chaque element des tuples renvoyés par la base de donnée
+        for email, prediction, choix_utilisateur in zip(emails, predictions,choix_utilisateur):
+            if prediction.id == choix_utilisateur.id and prediction.categorie_id == choix_utilisateur.categorie_id:
+                prediction_ok +=1 
+        #recupère quand les predictions ne sont pas ok les élements que je vais afficher pour l'administrateur
+            else:
+                tmp = []
+                tmp.append(email.texte)
+                tmp.append(prediction.categorie_id)
+                tmp.append(choix_utilisateur.categorie_id)
+                data.append(tmp)
+
+        taux = (prediction_ok/ db.session.query(Email.texte).count())*100
+        nb_elements = db.session.query(Email.texte).count()
+        print("taux de prediction correctes %s"%(taux))
+        
+        
+        return render_template('administrateur.html', title= 'Page Administrateur', data = data, taux = taux, nb_elements = nb_elements )
+    else:
+        return 'Erreur permission denied'
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     #si on est déja authentifié on n'a pas accès à la page enregistrement
@@ -64,9 +70,12 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(login_email= form.login_email.data).first()
+        #if user == 
         if user and bcrypt.check_password_hash(user.mot_de_passe, form.mot_de_passe.data):
             login_user(user, remember= form.remember.data)
-            #nous permet d'aller vers la page account que lorsque nous sommes 
+            if user.login_email == 'admin@blog.com':
+                return redirect(url_for('admin'), code = 307)
+            #nous permet d'aller vers la page account que lorsque nous sommes connecté
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
