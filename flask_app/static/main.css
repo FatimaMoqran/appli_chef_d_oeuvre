@@ -2,7 +2,7 @@ body {
     background: #fafafa;
     color: #333333;
     margin-top: 5rem;
-    background-image: url(images/background.jpg);
+    background-image: url(images/blanc.jpg); */
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -11,7 +11,9 @@ body {
   h1, h2, h3, h4, h5, h6 {
     color: #444444;
   }
-  
+  p {
+    color : #080808
+  }
   .bg-steel {
     background-color: #121213;
   }

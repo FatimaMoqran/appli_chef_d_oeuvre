@@ -70,7 +70,6 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(login_email= form.login_email.data).first()
-        #if user == 
         if user and bcrypt.check_password_hash(user.mot_de_passe, form.mot_de_passe.data):
             login_user(user, remember= form.remember.data)
             if user.login_email == 'admin@blog.com':
