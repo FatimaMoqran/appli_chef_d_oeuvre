@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 #pour crypter les mots de passe
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+import pybrake.flask
 
 
 #instancie l'application
@@ -26,5 +27,12 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 #avoir une alerte plus jolie avec bootstrap
 login_manager.login_message_category = 'info'
+
+#configurer le monitoring avec Airbrake 
+app.config['PYBRAKE'] = dict(
+    project_id=313069,
+    project_key='36f37e1cdf35c26dfbabea672989ed3a',
+)
+app = pybrake.flask.init_app(app)
 
 from flask_app import routes 

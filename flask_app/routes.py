@@ -92,26 +92,28 @@ def account():
     return render_template('account.html', title='Account')
 
 #nouvelle route pour poster les emails(il faut être connecté)
-@app.route('/email/new', methods = ['GET','POST'])
+@app.route('/email/new', methods = ['GET'])
 @login_required
 def classer_email():
     form = PostForm()
-    if form.validate_on_submit():
-        if request.method == "POST":
-            texte = request.form['texte']
-            print(texte)
-            response = classify(texte)
-            if response["status"] == "prediction_done": 
-                print('je vais dans le prédiction')
-                #enregistrer la prediction et le texte 
+    # if form.validate_on_submit():
+    #     if request.method == "POST":
+    #         texte = request.form['texte']
+    #         print(texte)
+    #         response = classify(texte)
+    #         if response["status"] == "prediction_done": 
+    #             #print('je vais dans le prédiction')
+    #             #enregistrer la prediction et le texte 
                 
-                prediction = Prediction(categorie_id = response['prediction'])
-                db.session.add(prediction)
-                db.session.commit()
-                email = Email(texte =texte,prediction_id= prediction.id, sender = current_user )
-                db.session.add(email)
-                db.session.commit()
-                return render_template('prediction.html',title= 'prediction', response=response, form='form')
+    #             prediction = Prediction(categorie_id = response['prediction'])
+    #             db.session.add(prediction)
+    #             db.session.commit()
+    #             email = Email(texte =texte,prediction_id= prediction.id, sender = current_user )
+    #             db.session.add(email)
+    #             db.session.commit()
+    #             return render_template('prediction.html',title= 'prediction', response=response, form='form')
+    #     else :
+    #         render_template('classer_email.html', title='Classer votre email', form=form)
     return render_template('classer_email.html', title='Classer votre email', form=form)
 
 @app.route('/enregistrer_email', methods = ['GET','POST'])       

@@ -84,3 +84,11 @@ body {
   .account-heading {
     font-size: 2.5rem;
   }
+
+  div.text_accueil {
+    text-align: center;
+    /* background-color: #f5efef; */
+    font-size: 13px;
+    padding: 10% 10%;
+  }
+
