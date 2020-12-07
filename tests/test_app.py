@@ -37,17 +37,20 @@ def test_classeremail(client):
     #assert res.status_code == 200
     assert res.status_code == 302
 
+#test de la connexion 
 def test_connexion():
     user = User.query.filter_by(login_email= 'admin@blog.com').first()
     assert bcrypt.check_password_hash(user.mot_de_passe, 'admin') == True
 
 
-
+#test de la requête api
 def test_requestapi():
     res = requests.post("http://23.251.133.90/predict",json = {"text":"api ne fonctionne pas les clients sont furieux."} )
     response = '{"prediction":"communication","status":"prediction_done"}'
+    #enlever les caractères de control avec rstrip
     assert res.text.rstrip() == response 
 
+#test base de données 
 def test_insert_bdd():
     user_pseudo= 'test'+ str(randint(1,1000))
     user_test = User(pseudo = user_pseudo,login_email= user_pseudo+'@test.com',mot_de_passe='python')

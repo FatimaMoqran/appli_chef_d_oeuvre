@@ -9,7 +9,7 @@
             <option {% if response['prediction'] == "emea" %} selected="selected" {% endif %}>emea</option>
             <option {% if response['prediction']== "communication" %} selected ="selected" {% endif %}>communication</option>
             <option {% if response['prediction'] =="online" %} selected = "selected" {% endif %}>online</option>
-            <option {% if response['prediction'] =="expertsystem/fournisseurs" %} selected = "selected" {% endif %}>expert system/fournisseur</option>
+            <option {% if response['prediction'] =="fournisseur/expert" %} selected = "selected" {% endif %}>fournisseur/expert</option>
             <option {% if response['prediction'] == "businessinfra" %} selected = "selected" {% endif %}>businessinfra</option>
         </select>
         <button type = "submit" class="btn btn-primary">Classer</button>
