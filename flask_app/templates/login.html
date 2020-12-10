@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="">
+        <!--fait partie de la protection des cookies-->
+            {{ form.hidden_tag()}}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Connecte toi</legend>
+          
+                <div class="form-group">
+                    {{form.login_email.label(class="form-control-label")}}
+                    {% if form.login_email.errors %}
+                        {{ form.login_email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.login_email.errors %}
+                                <span> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.login_email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{form.mot_de_passe.label(class="form-control-label")}}
+                    {% if form.mot_de_passe.errors %}
+                        {{ form.mot_de_passe(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.mot_de_passe.errors %}
+                                <span> {{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.mot_de_passe(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-check">
+                    {{ form.remember(class="form-check-input") }}
+                    {{ form.remember.label(class="form-check-label") }}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info")}}
+            </div>
+            <small class="text-muted ml-2">
+                <a href="#">Mot de passe oublié?</a>
+            </small>
+        </form>
+    </div>
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Pas encore de compte? <a class="ml-2" href="{{ url_for('register')}}">Créer un compte</a>
+        </small>
+    </div>
+{% endblock content %}
