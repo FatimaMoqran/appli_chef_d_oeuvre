@@ -6,6 +6,12 @@ from flask_app.modelsdatabase import User, Email, Prediction, ChoixUtilisateur, 
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_app.classify import classify
 
+#si une erreur avec la base de donnée on remove la session
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('home.html'), 500
+
 @app.route('/')
 @app.route('/home',methods=['POST','GET'])
 def home():
@@ -97,10 +103,14 @@ def account():
 def classer_email():
     form = PostForm()
     if form.validate_on_submit():
+        #verifie si un décalage en bdd
+        #choix_utilisateur=  db.session.query(Prediction).order_by(Prediction.id.desc()).first()
+        #print(choix_utilisateur)
         if request.method == "POST":
             texte = request.form['texte']
             print(texte)
             response = classify(texte)
+            
             if response["status"] == "prediction_done": 
                 #print('je vais dans le prédiction')
                 #enregistrer la prediction et le texte 
@@ -108,8 +118,13 @@ def classer_email():
                 prediction = Prediction(categorie_id = response['prediction'])
                 db.session.add(prediction)
                 db.session.commit()
-                email = Email(texte =texte,prediction_id= prediction.id, sender = current_user )
+                email = Email(texte =texte,prediction_id= prediction.id, sender = current_user, choix_utilisateur_id= prediction.id)
                 db.session.add(email)
+                db.session.commit()
+                #j'enregistre par défaut au cas où l'utilisateur décide de ne pas cliquer sur le bouton classer
+                #le choix utilisateur sera  = prediction
+                choix_utilisateur_id = ChoixUtilisateur(categorie_id = response['prediction'])
+                db.session.add(choix_utilisateur_id)
                 db.session.commit()
                 return render_template('prediction.html',title= 'prediction', response=response, form='form')
         else :
@@ -120,13 +135,19 @@ def classer_email():
 def enregistrer_email():
     form = PostForm()
     if request.method == "POST":
-        #enregistrer le choix
-        choix_utilisateur = ChoixUtilisateur(categorie_id=request.form['select_categorie'])
-        db.session.add(choix_utilisateur)
-        db.session.commit()
         email= db.session.query(Email).order_by(Email.id.desc()).first()
-        email.choix_utilisateur= choix_utilisateur 
+        print(email)
+        id_last = email.choix_utilisateur_id
+
+        #change le choix_utilisateur lorsque le user clique sur le bouton
+        #requête pour récuperer le dernier enregistrement
+        query = ChoixUtilisateur.query.filter_by(id = id_last).first()
+        #je le remplace par le choix du user
+        query.categorie_id = request.form['select_categorie']
+        print(query)
         db.session.commit()
-        flash('votre email a été classé','succes')
+
+        #flash('<h1>votre email a été classé</h1>','succes')
+        return render_template('home.html', title='Classer votre email', form=form,classee = True)
     return render_template('home.html', title='Classer votre email', form=form)
 

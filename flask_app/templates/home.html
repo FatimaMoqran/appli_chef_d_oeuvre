@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
+        <!-- si l'email est classée lorsqu'on appelle la page on affiche ce message  -->
+        {% if classee is defined %}
+        <div class="alert alert-success" role="alert">
+          l'email a été classé!
+        </div>
+         {% endif %}
         <div class = 'row'>
             <div class= "col-2"></div>
             <div class= "col-8">

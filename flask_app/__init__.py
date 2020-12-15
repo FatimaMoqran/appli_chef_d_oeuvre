@@ -4,14 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 import pybrake.flask
-
+import random
 
 #instancie l'application
 app = Flask(__name__)
 
 #genere une secret key pour les formulaires afin de proteger les cookies 
 #on genere la clé en python avec  la librairie secrets
-#app.config['SECRET KEY'] = '606c4261b169756bba33c5e36525d288'
+#app.config['SECRET KEY'] = str(random.randint(0,1000))+'606c4261b169756bba33c5e36525d288'
 
 
 #configurer la base de données (pour l'instant une SQLite)

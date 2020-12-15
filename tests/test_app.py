@@ -7,7 +7,7 @@ from flask_app.modelsdatabase import User, Email, Prediction, ChoixUtilisateur, 
 @pytest.fixture
 def client():
     app.config["TESTING"]= True
-    app.config['SECRET_KEY'] = '606c4261b169756bba33c5e36525d288'
+    app.config['SECRET_KEY'] = str(randint(0,1000))+'606c4261b169756bba33c5e36525d288'
     with app.test_client() as client:
         yield client 
         
